@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Level\Level.cpp" />
     <ClCompile Include="src\Level\LevelParser.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="src\Utilities\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Level\Level.h" />
     <ClInclude Include="src\Level\LevelParser.h" />
     <ClInclude Include="src\Utilities\Base64.h" />

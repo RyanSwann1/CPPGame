@@ -30,13 +30,14 @@ private:
 	const sf::Vector2i m_mapSize;
 };
 
-struct Level
+class Level
 {
 public:
 	Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets);
 
 	void draw(sf::RenderWindow& window) const;
 
+private:
 	const std::vector<TileLayer> m_tileLayers;
 	const std::unordered_map<std::string, TileSheet> m_tileSheets;
 };

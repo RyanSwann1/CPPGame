@@ -61,4 +61,3 @@ void Level::draw(sf::RenderWindow& window) const
 		tileLayer.draw(iter->second, window);
 	}
 }
-

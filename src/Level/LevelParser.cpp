@@ -179,9 +179,8 @@ std::vector<TileLayer> parseTileLayers(const TiXmlElement & rootElement, const L
 		}
 
 		auto tileMap = decodeTileLayer(*tileLayerElement, levelDetails.m_size);
-		std::string s = tileLayerElement->Attribute("name");
-		//TileLayer(const std::vector<std::vector<int>>& tileLayer, const std::string& tileSheetName, sf::Vector2i mapSize);
-		tileLayers.emplace_back(std::move(tileMap), s, levelDetails.m_size);
+		std::string name = tileLayerElement->Attribute("name");
+		tileLayers.emplace_back(std::move(tileMap), name, levelDetails.m_size);
 	}
 
 	assert(!tileLayers.empty());
