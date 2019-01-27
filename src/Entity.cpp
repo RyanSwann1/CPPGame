@@ -15,28 +15,36 @@ void Entity::move(Direction moveDirection)
 	m_moveDirection = moveDirection;
 }
 
-void Entity::update()
+void Entity::update(const std::vector<sf::FloatRect>& collisionLayer)
 {	
 	switch (m_moveDirection)
 	{
 	case Direction::Left:
 	{
-		m_position.x -= m_speed.x;
+		sf::Vector2f movement = sf::Vector2f(-m_speed.x, 0);
+		handleCollision(collisionLayer, movement);
+		m_position += movement;
 		break;
 	}
 	case Direction::Right:
 	{
-		m_position.x += m_speed.x;
+		sf::Vector2f movement = sf::Vector2f(m_speed.x, 0);
+		handleCollision(collisionLayer, movement);
+		m_position += movement;
 		break;
 	}
 	case Direction::Up:
 	{
-		m_position.y -= m_speed.y;
+		sf::Vector2f movement = sf::Vector2f(0, -m_speed.y);
+		handleCollision(collisionLayer, movement);
+		m_position += movement;
 		break;
 	}
 	case Direction::Down:
 	{
-		m_position.y += m_speed.y;
+		sf::Vector2f movement = sf::Vector2f(0, m_speed.y);
+		handleCollision(collisionLayer, movement);
+		m_position += movement;
 		break;
 	}
 	}
@@ -48,4 +56,19 @@ void Entity::update()
 void Entity::draw(sf::RenderWindow & window) const
 {
 	window.draw(m_rect);
+}
+
+void Entity::handleCollision(const std::vector<sf::FloatRect>& collisionLayer, sf::Vector2f& movement) const
+{
+	sf::FloatRect entityAABB(m_position + movement, m_rect.getSize());
+	for (const sf::FloatRect collision : collisionLayer)
+	{
+		sf::FloatRect intersection;
+		if (entityAABB.intersects(collision, intersection))
+		{
+			movement.x += intersection.width;
+			movement.y += intersection.height;
+			break;
+		}
+	}
 }

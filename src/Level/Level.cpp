@@ -47,10 +47,18 @@ void TileLayer::draw(const TileSheet& tileSheet, sf::RenderWindow& window) const
 }
 
 //Level
-Level::Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets)
+Level::Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets,
+	std::vector<sf::FloatRect>&& collisionLayer)
 	: m_tileLayers(tileLayers),
-	m_tileSheets(tileSheets)
+	m_tileSheets(tileSheets),
+	m_collisionLayer(collisionLayer)
 {}
+
+const std::vector<sf::FloatRect>& Level::getCollisionLayer() const
+{
+	assert(!m_collisionLayer.empty());
+	return m_collisionLayer;
+}
 
 void Level::draw(sf::RenderWindow& window) const
 {

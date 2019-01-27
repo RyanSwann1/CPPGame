@@ -21,7 +21,7 @@ LevelDetails parseLevelDetails(const TiXmlElement& rootElement);
 std::vector<std::vector<int>> decodeTileLayer(const TiXmlElement & tileLayerElement, sf::Vector2i levelSize);
 std::unordered_map<std::string, TileSheet> parseTileSheets(const TiXmlElement& rootElement);
 void parseEntities(const TiXmlElement & rootElement, int tileSize);
-std::vector<sf::IntRect> parseCollisionLayer(const TiXmlElement & rootElement, int tileSize);
+std::vector<sf::FloatRect> parseCollisionLayer(const TiXmlElement & rootElement, int tileSize);
 
 Level LevelParser::parseLevel(const std::string& levelName)
 {
@@ -33,14 +33,14 @@ Level LevelParser::parseLevel(const std::string& levelName)
 	LevelDetails levelDetails = parseLevelDetails(*rootElement);
 	std::unordered_map<std::string, TileSheet> tileSheets = parseTileSheets(*rootElement);
 	parseEntities(*rootElement, levelDetails.m_tileSize);
-	parseCollisionLayer(*rootElement, levelDetails.m_tileSize);
+	std::vector<sf::FloatRect> collisionLayer = parseCollisionLayer(*rootElement, levelDetails.m_tileSize);
 
-	return Level(std::move(parseTileLayers(*rootElement, levelDetails)), tileSheets);
+	return Level(parseTileLayers(*rootElement, levelDetails), tileSheets, std::move(collisionLayer));
 }
 
-std::vector<sf::IntRect> parseCollisionLayer(const TiXmlElement & rootElement, int tileSize)
+std::vector<sf::FloatRect> parseCollisionLayer(const TiXmlElement & rootElement, int tileSize)
 {
-	std::vector<sf::IntRect> collidablePositions;
+	std::vector<sf::FloatRect> collidablePositions;
 	for (const auto* collisionLayerElement = rootElement.FirstChildElement(); collisionLayerElement != nullptr;
 		collisionLayerElement = collisionLayerElement->NextSiblingElement())
 	{
@@ -65,7 +65,6 @@ std::vector<sf::IntRect> parseCollisionLayer(const TiXmlElement & rootElement, i
 			collidablePositions.emplace_back(xPosition, yPosition, tileSize, tileSize);
 		}
 	}
-
 	
 	return collidablePositions;
 }

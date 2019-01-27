@@ -33,11 +33,15 @@ private:
 class Level
 {
 public:
-	Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets);
+	Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets,
+		std::vector<sf::FloatRect>&& collisionLayer);
+
+	const std::vector<sf::FloatRect>& getCollisionLayer() const;
 
 	void draw(sf::RenderWindow& window) const;
 
 private:
 	const std::vector<TileLayer> m_tileLayers;
 	const std::unordered_map<std::string, TileSheet> m_tileSheets;
+	const std::vector<sf::FloatRect> m_collisionLayer;
 };

@@ -48,7 +48,7 @@ int main()
 			handleInput(sfmlEvent, player);
 		}
 
-		player.update();
+		player.update(level.getCollisionLayer());
 		
 		//Window
 		window.clear(sf::Color::Black);
