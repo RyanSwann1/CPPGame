@@ -1,8 +1,11 @@
-#include "SFML/Window.hpp"
+#include "Level/Level.h"
+#include "Level/LevelParser.h"
 
 int main()
 {
-	sf::Window window(sf::VideoMode(640, 480), "SFML_WINDOW", sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(800, 800), "SFML_WINDOW", sf::Style::Default);
+	Level level(LevelParser::parseLevel("MapTwo.tmx"));
+	
 	while (window.isOpen())
 	{
 		sf::Event sfmlEvent;
@@ -13,6 +16,10 @@ int main()
 				window.close();
 			}
 		}
+
+		window.clear(sf::Color::Black);
+		level.draw(window);
+		window.display();
 	}
 
 	return -1;
