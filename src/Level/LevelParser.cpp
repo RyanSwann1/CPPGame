@@ -71,7 +71,6 @@ std::vector<sf::FloatRect> parseCollisionLayer(const TiXmlElement & rootElement,
 
 void parseEntities(const TiXmlElement & rootElement, int tileSize)
 {
-	
 	for (const auto* entityElementRoot = rootElement.FirstChildElement(); entityElementRoot != nullptr; entityElementRoot = entityElementRoot->NextSiblingElement())
 	{
 		if (entityElementRoot->Value() != std::string("objectgroup") || entityElementRoot->Attribute("name") != std::string("Entity Layer"))
