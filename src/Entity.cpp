@@ -81,6 +81,11 @@ void Entity::handleMovement(const std::vector<sf::FloatRect>& collisionLayer)
 		m_position.y += movement.y;
 		break;
 	}
+	case Direction::None :
+	{
+		m_moveDirection = Direction::None;
+		break;
+	}
 	}
 }
 

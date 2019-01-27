@@ -26,6 +26,11 @@ void handleInput(const sf::Event& sfmlEvent, Entity& player)
 		player.move(Direction::Down);
 		break;
 	}
+	case sf::Keyboard::Space :
+	{
+		player.move(Direction::None);
+		break;
+	}
 	}
 }
 
