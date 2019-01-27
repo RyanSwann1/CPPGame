@@ -86,25 +86,25 @@ void Entity::handleMovement(const std::vector<sf::FloatRect>& collisionLayer)
 
 void Entity::handleCollision(const std::vector<sf::FloatRect>& collisionLayer, sf::Vector2f& movement) const
 {
-	//sf::FloatRect entityAABB(m_position + movement, m_rect.getSize());
-	//for (const sf::FloatRect collision : collisionLayer)
-	//{
-	//	sf::FloatRect intersection;
-	//	if (entityAABB.intersects(collision, intersection))
-	//	{
-	//		if (m_moveDirection == Direction::Right || m_moveDirection == Direction::Down)
-	//		{
-	//			movement.x -= intersection.width;
-	//			movement.y -= intersection.height;
-	//		}
-	//		else
-	//		{
-	//			movement.x += intersection.width;
-	//			movement.y += intersection.height;
-	//		}
-	//		break;
-	//	}
-	//}
+	sf::FloatRect entityAABB(m_position + movement, sf::Vector2f(m_tileSheet.m_tileSize, m_tileSheet.m_tileSize));
+	for (const sf::FloatRect collision : collisionLayer)
+	{
+		sf::FloatRect intersection;
+		if (entityAABB.intersects(collision, intersection))
+		{
+			if (m_moveDirection == Direction::Right || m_moveDirection == Direction::Down)
+			{
+				movement.x -= intersection.width;
+				movement.y -= intersection.height;
+			}
+			else
+			{
+				movement.x += intersection.width;
+				movement.y += intersection.height;
+			}
+			break;
+		}
+	}
 }
 
 void Entity::handleAnimations(float deltaTime)
