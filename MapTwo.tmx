@@ -3,6 +3,9 @@
  <tileset firstgid="1" name="Overworld" tilewidth="16" tileheight="16" tilecount="1440" columns="40">
   <image source="Overworld.png" trans="aa0000" width="640" height="576"/>
  </tileset>
+ <tileset firstgid="1441" name="Player" tilewidth="16" tileheight="16" tilecount="272" columns="17">
+  <image source="Player.png" trans="aa0000" width="272" height="256"/>
+ </tileset>
  <layer name="Overworld" width="50" height="50">
   <properties>
    <property name="TileSheetName" value="Overworld.png"/>

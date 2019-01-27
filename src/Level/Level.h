@@ -37,6 +37,7 @@ public:
 		std::vector<sf::FloatRect>&& collisionLayer);
 
 	const std::vector<sf::FloatRect>& getCollisionLayer() const;
+	const TileSheet& getTileSheet(const std::string& name) const;
 
 	void draw(sf::RenderWindow& window) const;
 

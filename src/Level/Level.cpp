@@ -60,6 +60,13 @@ const std::vector<sf::FloatRect>& Level::getCollisionLayer() const
 	return m_collisionLayer;
 }
 
+const TileSheet & Level::getTileSheet(const std::string & name) const
+{
+	auto iter = m_tileSheets.find(name);
+	assert(iter != m_tileSheets.cend());
+	return iter->second;
+}
+
 void Level::draw(sf::RenderWindow& window) const
 {
 	for (const auto& tileLayer : m_tileLayers)
