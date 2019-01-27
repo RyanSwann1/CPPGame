@@ -7,7 +7,8 @@ Animation::Animation(int startingFrame, int endingFrame, sf::Vector2f drawLocati
 	: m_startingFrame(startingFrame),
 	m_endingFrame(endingFrame),
 	m_drawLocationSize(drawLocationSize),
-	m_frameTime(0.75f),
+	m_frameTime(0.25f),
+	m_elaspedTime(0.0f),
 	m_currentFrame(startingFrame)
 {}
 
@@ -16,7 +17,7 @@ Entity::Entity(sf::Vector2f startingPosition, const TileSheet& tileSheet, const 
 	: m_tileSheet(tileSheet),
 	m_moveDirection(Direction::None),
 	m_position(startingPosition),
-	m_speed(sf::Vector2f(5.0f, 5.0f)),
+	m_speed(sf::Vector2f(2.5f, 2.5f)),
 	m_sprite(m_tileSheet.m_texture),
 	m_animations(animations),
 	m_currentAnimation(nullptr)
@@ -143,12 +144,17 @@ void Entity::handleAnimations(float deltaTime)
 	}
 	}
 
+	if (m_currentAnimation->m_startingFrame == m_currentAnimation->m_endingFrame)
+	{
+		return;
+	}
+
 	m_currentAnimation->m_elaspedTime += deltaTime;
 	if (m_currentAnimation->m_elaspedTime >= m_currentAnimation->m_frameTime)
 	{
 		++m_currentAnimation->m_currentFrame;
 		m_currentAnimation->m_elaspedTime = 0;
-		if (m_currentAnimation->m_currentFrame == m_currentAnimation->m_endingFrame)
+		if (m_currentAnimation->m_currentFrame >= m_currentAnimation->m_endingFrame)
 		{
 			m_currentAnimation->m_currentFrame = m_currentAnimation->m_startingFrame;
 		}

@@ -45,7 +45,6 @@ private:
 	std::unordered_map<std::string, Animation> m_animations;
 	Animation* m_currentAnimation;
 
-
 	void handleMovement(const std::vector<sf::FloatRect>& collisionLayer);
 	void handleCollision(const std::vector<sf::FloatRect>& collisionLayer, sf::Vector2f& movement) const;
 	void handleAnimations(float deltaTime);
