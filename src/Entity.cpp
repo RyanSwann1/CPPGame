@@ -1,169 +1,39 @@
 #include "Entity.h"
 #include "Level/Level.h"
-#include <assert.h>
 
-//Animation
-Animation::Animation(int startingFrame, int endingFrame, sf::Vector2f drawLocationSize)
-	: m_startingFrame(startingFrame),
-	m_endingFrame(endingFrame),
-	m_drawLocationSize(drawLocationSize),
-	m_frameTime(0.25f),
-	m_elaspedTime(0.0f),
-	m_currentFrame(startingFrame)
-{}
-
-//Entity
-Entity::Entity(sf::Vector2f startingPosition, const TileSheet& tileSheet, const std::unordered_map<std::string, Animation>& animations)
+Entity::Entity(const TileSheet& tileSheet, sf::Vector2f startingPosition)
 	: m_tileSheet(tileSheet),
-	m_moveDirection(Direction::None),
+	m_moveDirection(Direction::Up),
 	m_position(startingPosition),
-	m_speed(sf::Vector2f(2.5f, 2.5f)),
-	m_sprite(m_tileSheet.m_texture),
-	m_animations(animations),
-	m_currentAnimation(nullptr)
+	m_speed(1.f, 1.f),
+	m_sprite(tileSheet.m_texture, tileSheet.getTileLocation(245))
 {
-	setCurrentAnimation("Idle");
+	m_sprite.rotate(-90);
 }
 
-void Entity::move(Direction moveDirection)
-{
-	m_moveDirection = moveDirection;
-}
-
-void Entity::update(const std::vector<sf::FloatRect>& collisionLayer, float deltaTime)
-{	
-	handleMovement(collisionLayer);
-	handleAnimations(deltaTime);
-
-	//m_moveDirection = Direction::None;
-	m_sprite.setPosition(m_position);
-
-	assert(m_currentAnimation);
-	sf::IntRect tileRect = m_tileSheet.getTileLocation(m_currentAnimation->m_currentFrame);
-	tileRect.height = m_currentAnimation->m_drawLocationSize.y * m_tileSheet.m_tileSize;
-	m_sprite.setTextureRect(tileRect);
-}
-
-void Entity::draw(sf::RenderWindow & window) const
-{
-
-	window.draw(m_sprite);
-}
-
-void Entity::handleMovement(const std::vector<sf::FloatRect>& collisionLayer)
+void Entity::update()
 {
 	switch (m_moveDirection)
 	{
 	case Direction::Left:
-	{
-		sf::Vector2f movement = sf::Vector2f(-m_speed.x, 0);
-		handleCollision(collisionLayer, movement);
-		m_position.x += movement.x;
+		m_position.x -= m_speed.x;
 		break;
-	}
 	case Direction::Right:
-	{
-		sf::Vector2f movement = sf::Vector2f(m_speed.x, 0);
-		handleCollision(collisionLayer, movement);
-		m_position.x += movement.x;
+		m_position.x += m_speed.x;
 		break;
-	}
 	case Direction::Up:
-	{
-		sf::Vector2f movement = sf::Vector2f(0, -m_speed.y);
-		handleCollision(collisionLayer, movement);
-		m_position.y += movement.y;
+		m_position.y -= m_speed.y;
 		break;
-	}
 	case Direction::Down:
-	{
-		sf::Vector2f movement = sf::Vector2f(0, m_speed.y);
-		handleCollision(collisionLayer, movement);
-		m_position.y += movement.y;
+		m_position.y += m_speed.y;
 		break;
+
 	}
-	case Direction::None :
-	{
-		m_moveDirection = Direction::None;
-		break;
-	}
-	}
+
+	m_sprite.setPosition(m_position);
 }
 
-void Entity::handleCollision(const std::vector<sf::FloatRect>& collisionLayer, sf::Vector2f& movement) const
+void Entity::draw(sf::RenderWindow & window) const
 {
-	sf::FloatRect entityAABB(m_position + movement, sf::Vector2f(m_tileSheet.m_tileSize, m_tileSheet.m_tileSize));
-	for (const sf::FloatRect collision : collisionLayer)
-	{
-		sf::FloatRect intersection;
-		if (entityAABB.intersects(collision, intersection))
-		{
-			if (m_moveDirection == Direction::Right || m_moveDirection == Direction::Down)
-			{
-				movement.x -= intersection.width;
-				movement.y -= intersection.height;
-			}
-			else
-			{
-				movement.x += intersection.width;
-				movement.y += intersection.height;
-			}
-			break;
-		}
-	}
-}
-
-void Entity::handleAnimations(float deltaTime)
-{
-	switch (m_moveDirection)
-	{
-	case Direction::Left :
-	{
-		setCurrentAnimation("WalkLeft");
-		break;
-	}
-	case Direction::Right :
-	{
-		setCurrentAnimation("WalkRight");
-		break;
-	}
-	case Direction::Up :
-	{
-		setCurrentAnimation("WalkUp");
-		break;
-	}
-	case Direction::Down :
-	{
-		setCurrentAnimation("WalkDown");
-		break;
-	}
-	case Direction::None :
-	{
-		setCurrentAnimation("Idle");
-		break;
-	}
-	}
-
-	if (m_currentAnimation->m_startingFrame == m_currentAnimation->m_endingFrame)
-	{
-		return;
-	}
-
-	m_currentAnimation->m_elaspedTime += deltaTime;
-	if (m_currentAnimation->m_elaspedTime >= m_currentAnimation->m_frameTime)
-	{
-		++m_currentAnimation->m_currentFrame;
-		m_currentAnimation->m_elaspedTime = 0;
-		if (m_currentAnimation->m_currentFrame >= m_currentAnimation->m_endingFrame)
-		{
-			m_currentAnimation->m_currentFrame = m_currentAnimation->m_startingFrame;
-		}
-	}
-}
-
-void Entity::setCurrentAnimation(const std::string & name)
-{
-	auto iter = m_animations.find(name);
-	assert(iter != m_animations.cend());
-	m_currentAnimation = &iter->second;
+	window.draw(m_sprite);
 }

@@ -18,22 +18,26 @@ sf::IntRect TileSheet::getTileLocation(int tileID) const
 }
 
 //TileLayer
-TileLayer::TileLayer(const std::vector<std::vector<int>>& tileLayer, const std::string& tileSheetName, sf::Vector2i mapSize)
+TileLayer::TileLayer(const std::vector<std::vector<int>>& tileLayer, const std::string& tileSheetName)
 	: m_name(tileSheetName),
-	m_tileLayer(tileLayer),
-	m_mapSize(mapSize)
+	m_tileLayer(tileLayer)
 {}
+
+const std::vector<std::vector<int>>& TileLayer::getTileLayer() const
+{
+	return m_tileLayer;
+}
 
 const std::string & TileLayer::getName() const
 {
 	return m_name;
 }
 
-void TileLayer::draw(const TileSheet& tileSheet, sf::RenderWindow& window) const
+void TileLayer::draw(const TileSheet& tileSheet, sf::RenderWindow& window, sf::Vector2i levelSize) const
 {
-	for (int y = 0; y < m_mapSize.y; ++y)
+	for (int y = 0; y < levelSize.y; ++y)
 	{
-		for (int x = 0; x < m_mapSize.x; ++x)
+		for (int x = 0; x < levelSize.x; ++x)
 		{
 			const int tileID = m_tileLayer[y][x];
 			if (tileID >= 0)
@@ -47,12 +51,28 @@ void TileLayer::draw(const TileSheet& tileSheet, sf::RenderWindow& window) const
 }
 
 //Level
-Level::Level(const std::vector<TileLayer>& tileLayers, const std::unordered_map<std::string, TileSheet>& tileSheets,
-	std::vector<sf::FloatRect>&& collisionLayer)
-	: m_tileLayers(tileLayers),
+Level::Level(sf::Vector2i levelSize, std::vector<TileLayer> tileLayers, std::unordered_map<std::string, TileSheet> tileSheets,
+	std::vector<sf::FloatRect>&& collisionLayer, std::vector<sf::Vector2f> entityStartingPositions)
+	: m_levelSize(levelSize),
+	m_tileLayers(tileLayers),
 	m_tileSheets(tileSheets),
-	m_collisionLayer(collisionLayer)
-{}
+	m_collisionLayer(std::move(collisionLayer))
+{
+	for (sf::Vector2f entityStartingPosition : entityStartingPositions)
+	{
+		m_entities.emplace_back(m_tileSheets.begin()->second, entityStartingPosition);
+	}
+}
+
+sf::Vector2i Level::getSize() const
+{
+	return m_levelSize;
+}
+
+const TileLayer & Level::getTileLayer() const
+{
+	return m_tileLayers.front();
+}
 
 const std::vector<sf::FloatRect>& Level::getCollisionLayer() const
 {
@@ -67,12 +87,23 @@ const TileSheet & Level::getTileSheet(const std::string & name) const
 	return iter->second;
 }
 
+void Level::update()
+{
+	for (auto& entity : m_entities)
+	{
+		entity.update();
+	}
+}
+
 void Level::draw(sf::RenderWindow& window) const
 {
 	for (const auto& tileLayer : m_tileLayers)
 	{
-		auto iter = m_tileSheets.find(tileLayer.getName());
-		assert(iter != m_tileSheets.cend());
-		tileLayer.draw(iter->second, window);
+		tileLayer.draw(m_tileSheets.begin()->second, window, m_levelSize);
+	}
+
+	for (const auto& entity : m_entities)
+	{
+		entity.draw(window);
 	}
 }

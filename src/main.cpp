@@ -1,54 +1,14 @@
 #include "Level/Level.h"
 #include "Level/LevelParser.h"
-#include "Entity.h"
 
-void handleInput(const sf::Event& sfmlEvent, Entity& player)
-{
-	switch (sfmlEvent.key.code)
-	{
-	case sf::Keyboard::A :
-	{
-		player.move(Direction::Left);
-		break;
-	}
-	case sf::Keyboard::D :
-	{
-		player.move(Direction::Right);
-		break;
-	}
-	case sf::Keyboard::W :
-	{
-		player.move(Direction::Up);
-		break;
-	}
-	case sf::Keyboard::S :
-	{
-		player.move(Direction::Down);
-		break;
-	}
-	case sf::Keyboard::Space :
-	{
-		player.move(Direction::None);
-		break;
-	}
-	}
-}
+//https://gamedev.stackexchange.com/questions/44037/what-are-the-most-common-ai-systems-implemented-in-tower-defense-games
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 800), "SFML_WINDOW", sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(1200, 1200), "SFML_WINDOW", sf::Style::Default);
 	window.setFramerateLimit(60);
-	Level level(LevelParser::parseLevel("MapTwo.tmx"));
-	sf::Time frameTime;
-	sf::Clock gameClock;
-
-	std::unordered_map<std::string, Animation> animations;
-	animations.emplace(std::string("Idle"), Animation(0, 0, sf::Vector2f(1, 2)));
-	animations.emplace(std::string("WalkDown"), Animation(0, 3, sf::Vector2f(1, 2)));
-	animations.emplace(std::string("WalkRight"), Animation(34, 37, sf::Vector2f(1, 2)));
-	animations.emplace(std::string("WalkUp"), Animation(68, 71, sf::Vector2f(1, 2)));
-	animations.emplace(std::string("WalkLeft"), Animation(102, 105, sf::Vector2f(1, 2)));
-	Entity player(sf::Vector2f(150, 150), level.getTileSheet("Player"), animations);
+	
+	Level level(LevelParser::parseLevel("MapOne.tmx"));
 
 	while (window.isOpen())
 	{
@@ -59,18 +19,37 @@ int main()
 			{
 				window.close();
 			}
-			handleInput(sfmlEvent, player);
 		}
 
-		player.update(level.getCollisionLayer(), frameTime.asSeconds());
-		
+		sf::IntRect mouseAABB(sf::Vector2i(sf::Mouse::getPosition(window).x - 64, sf::Mouse::getPosition(window).y - 64), sf::Vector2i(64, 64));
+		sf::RectangleShape mouseRect;
+		mouseRect.setSize(sf::Vector2f(64, 64));
+		mouseRect.setOutlineColor(sf::Color::Red);
+		mouseRect.setOutlineThickness(2.5f);
+		mouseRect.setFillColor(sf::Color::Transparent);
+
+		const std::vector<std::vector<int>>& tileLayer = level.getTileLayer().getTileLayer();
+		for (int y = 0; y < level.getSize().y; ++y)
+		{
+			for (int x = 0; x < level.getSize().x; ++x)
+			{
+				sf::IntRect tileRect(sf::Vector2i(x * 64, y * 64), sf::Vector2i(64, 64));
+				if (mouseAABB.intersects(tileRect))
+				{
+					mouseRect.setPosition(tileRect.left, tileRect.top);
+				}
+			}
+		}
+
+
+		level.update();
+
 		//Window
 		window.clear(sf::Color::Black);
+		
 		level.draw(window);
-		player.draw(window);
+		window.draw(mouseRect);
 		window.display();
-
-		frameTime = gameClock.restart();
 	}
 
 	return -1;
